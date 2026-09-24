@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TypeSafe AI Bot — Demo Reel</title>
+<style>
+  :root{
+    --bg:#0e1015;--panel:#12161d;--inset:#0a0c10;--line:#232833;--line-soft:#1a1f28;
+    --ink:#eae8e3;--dim:#9aa3b2;--faint:#616b7a;
+    --accent:#6ee7b7;--indigo:#818cf8;--amber:#f5b95f;--red:#ef6f6f;
+    --mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+    --sans:"Inter","Segoe UI",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    width:1280px;height:720px;overflow:hidden;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);-webkit-font-smoothing:antialiased;position:relative;
+  }
+  .scene{position:absolute;inset:0;padding:44px 56px;opacity:0;transition:opacity .45s ease}
+  .scene.on{opacity:1}
+  /* deterministic opacity is driven inline by renderAt(); disable CSS transitions */
+  .anim{transition:none !important}
+
+  /* ---------- scene 1: title ---------- */
+  #s1{display:flex;flex-direction:column;justify-content:center}
+  .kick{
+    display:inline-flex;align-items:center;gap:10px;align-self:flex-start;
+    font-size:15px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);border:1px solid #1f3d33;background:#0e1a16;
+    padding:10px 18px;border-radius:999px;margin-bottom:28px;
+  }
+  .kick .d{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+  #s1 h1{font-size:64px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+  #s1 h1 em{font-style:normal;color:var(--accent)}
+  #s1 p{margin-top:20px;font-size:23px;color:var(--dim);line-height:1.5;max-width:1000px}
+  .stats{display:flex;gap:52px;margin-top:44px}
+  .st b{display:block;font-family:var(--mono);font-size:42px;font-weight:600;letter-spacing:-.02em}
+  .st span{font-size:13px;color:var(--faint);text-transform:uppercase;letter-spacing:.1em;font-weight:650}
+  .st b.g{color:var(--accent)}.st b.a{color:var(--amber)}.st b.i{color:var(--indigo)}
+
+  /* ---------- scene 2: feed ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:24px;
+  }
+  .topbar .t{display:flex;align-items:center;gap:12px}
+  .logo{width:40px;height:40px;border-radius:11px;background:linear-gradient(145deg,#7ff0c4,#4fd1a0);
+    display:grid;place-items:center;color:#08201a;font-weight:800;font-size:16px}
+  .topbar .nm{font-size:18px;font-weight:700}
+  .topbar .ch{font-size:13px;color:var(--faint);font-family:var(--mono)}
+  .livechip{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid #1f3d33;
+    background:#0e1a16;padding:8px 14px;border-radius:999px}
+  .livechip .d{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+  .feed{display:flex;flex-direction:column;gap:14px}
+  .m{
+    display:flex;gap:14px;align-items:flex-start;background:var(--panel);
+    border:1px solid var(--line);border-radius:13px;padding:15px 18px;
+  }
+  .m.flag{border-color:#4a3a1c;background:#16130e}
+  .m.clr{border-color:#1f3d33;background:#0f1a16}
+  .av{flex:0 0 38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;color:#0c1512}
+  .a1{background:#c98b6b}.a2{background:#8b9dc9}.a3{background:#7fc9a8}
+  .body{flex:1;min-width:0}
+  .mh{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .mh b{font-size:16px;font-weight:650}
+  .mh .ch{font-size:12.5px;color:var(--faint);font-family:var(--mono)}
+  .txt{font-size:17px;color:#dcd9d2;line-height:1.4}
+  .out{margin-top:9px;font-size:13px;font-family:var(--mono);color:var(--faint)}
+  .badge{
+    flex:0 0 auto;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    padding:7px 13px;border-radius:7px;
+  }
+  .b-hit{color:var(--amber);background:#1a1610;border:1px solid #3d3320}
+  .b-ok{color:var(--accent);background:#0e1a16;border:1px solid #1f3d33}
+
+  /* ---------- scene 3: verdict / vote ---------- */
+  #s3 .h{font-size:13px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:12px}
+  #s3 .h::before{content:"— ";color:var(--accent)}
+  .vote{
+    background:#14171d;border-left:5px solid var(--amber);border-radius:12px;
+    padding:22px 26px;margin-bottom:22px;
+  }
+  .vote .vt{font-size:22px;font-weight:700;margin-bottom:14px}
+  .vote .row{font-size:16.5px;color:#c3c8d2;line-height:1.6;margin-bottom:7px}
+  .vote .row b{color:#fff;font-weight:650}
+  .vote .ai{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);
+    font-size:15px;color:var(--accent);font-family:var(--mono)}
+  .vote .win{font-size:13.5px;color:var(--faint);margin-top:9px}
+  .steps{display:flex;gap:0;margin-top:24px}
+  .sn{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .sn .st{font-family:var(--mono);font-size:11.5px;color:var(--accent);font-weight:600;margin-bottom:4px}
+  .sn h4{font-size:14.5px;font-weight:650;margin-bottom:2px}
+  .sn p{font-size:12px;color:var(--dim);line-height:1.35}
+  .ar{display:grid;place-items:center;padding:0 8px;color:var(--faint);font-size:17px}
+</style>
+</head>
+<body>
+
+<!-- ============ SCENE 1 — title ============ -->
+<div class="scene" id="s1">
+  <span class="kick"><span class="d"></span> Live on the Knox Defense Force server</span>
+  <h1>Moderation that <em>reads your rules</em><br>and shows the receipts.</h1>
+  <p>Every message screened against the server rulebook · member reports gated by an AI review ·
+     consequences decided by community vote.</p>
+  <div class="stats">
+    <div class="st"><b class="a" id="c-cases">0</b><span>cases logged</span></div>
+    <div class="st"><b class="i">2</b><span>open votes</span></div>
+    <div class="st"><b class="g">0</b><span>silent actions</span></div>
+    <div class="st"><b>13</b><span>slash commands</span></div>
+  </div>
+</div>
+
+<!-- ============ SCENE 2 — live feed ============ -->
+<div class="scene" id="s2">
+  <div class="topbar">
+    <div class="t">
+      <div class="logo">TS</div>
+      <div>
+        <div class="nm">TypeSafe AI Bot</div>
+        <div class="ch">#bot-testing · live webhook feed</div>
+      </div>
+    </div>
+    <span class="livechip"><span class="d"></span> Screening live</span>
+  </div>
+  <div class="feed" id="feed"></div>
+</div>
+
+<!-- ============ SCENE 3 — verdict ============ -->
+<div class="scene" id="s3">
+  <div class="h">What the mod team gets</div>
+  <div class="vote">
+    <div class="vt">Community vote — reported member</div>
+    <div class="row"><b>Reported by:</b> @member1 &nbsp;·&nbsp; <b>Reason required:</b> written, then AI-checked</div>
+    <div class="row"><b>Reason:</b> They kept screaming slurs at people in the voice channel and wouldn't stop after warnings.</div>
+    <div class="ai">AI review: reason validity 0.94 → suggests 1h voice mute</div>
+    <div class="win">Passes at ≥5 votes &amp; ≥60% within 10 min · the AI reviews the outcome before anything applies</div>
+  </div>
+  <div class="steps" id="steps">
+    <div class="sn"><div class="st">STEP 1</div><h4>Message arrives</h4><p>Read against every enabled rule.</p></div>
+    <div class="ar">→</div>
+    <div class="sn"><div class="st">STEP 2</div><h4>AI review</h4><p>A probability per rule — never a punishment.</p></div>
+    <div class="ar">→</div>
+    <div class="sn"><div class="st">STEP 3</div><h4>Confidence bands</h4><p>High acts · medium alerts a mod · low logs.</p></div>
+    <div class="ar">→</div>
+    <div class="sn"><div class="st">STEP 4</div><h4>Action + case</h4><p>Applied, logged with names, sent to owners.</p></div>
+  </div>
+</div>
+
+<script>
+// Real live-pipeline results (case numbers from data/tsabot.db after the live run).
+const FEED = [
+  {n:"raider_kx", c:"#general", t:"I know where you live and I will dox you and your family",
+   out:"case #27 · doxxing reference · logged + mod alerted", hit:true, av:"a1", i:"R", at:2900},
+  {n:"pug_lord", c:"#clips", t:"kys already",
+   out:"case #29 · self-harm encouragement · logged + mod alerted", hit:true, av:"a2", i:"P", at:4500},
+  {n:"Mimic", c:"#general", t:"I'll kill them if them touches my generator again",
+   out:"case #28 · threat-like language · logged + mod alerted", hit:true, av:"a1", i:"M", at:6100},
+  {n:"owen", c:"#general", t:"gg that was a great raid tonight, thanks for the help everyone",
+   out:"no case written — clean messages pass untouched", hit:false, av:"a3", i:"O", at:7700},
+];
+const TOTAL_CASES = 30;
+
+const scenes = {s1:document.getElementById("s1"), s2:document.getElementById("s2"), s3:document.getElementById("s3")};
+
+// build message DOM once
+const feedEl = document.getElementById("feed");
+FEED.forEach(m => {
+  const d = document.createElement("div");
+  d.className = "m anim " + (m.hit ? "flag" : "clr");
+  d.dataset.at = m.at;
+  d.innerHTML = `
+    <div class="av ${m.av}">${m.i}</div>
+    <div class="body">
+      <div class="mh"><b>${m.n}</b><span class="ch">${m.c}</span></div>
+      <div class="txt">${m.t}</div>
+      <div class="out">${m.out}</div>
+    </div>
+    <div class="badge ${m.hit ? "b-hit" : "b-ok"}">${m.hit ? "Flagged" : "Cleared"}</div>`;
+  feedEl.appendChild(d);
+});
+const msgs = [...feedEl.querySelectorAll(".m")];
+const nodes = [...document.querySelectorAll("#steps .sn, #steps .ar")];
+
+// ---- deterministic timeline -------------------------------------------
+// Scene windows (ms) and the easing helpers used to build each frame.
+const TL = {
+  s1:[0, 2600],
+  s2:[2600, 8800],
+  s3:[8800, 13200],
+  END: 13200,
+};
+
+const clamp01 = v => Math.max(0, Math.min(1, v));
+const easeOut = p => 1 - Math.pow(1 - clamp01(p), 3);
+const easeIO  = p => { p = clamp01(p); return p<.5 ? 4*p*p*p : 1-Math.pow(-2*p+2,3)/2; };
+
+function setScene(el, alpha){
+  el.style.opacity = alpha.toFixed(3);
+  el.classList.toggle("on", alpha > 0.5);
+}
+
+function renderAt(t){
+  // --- scene 1 -------------------------------------------------------
+  const [a0, a1] = TL.s1;
+  let s1a = 0;
+  if (t >= a0) s1a = easeOut((t - a0) / 350);
+  if (t > a1 - 300) s1a = 1 - easeIO((t - (a1 - 300)) / 300);
+  setScene(scenes.s1, s1a);
+  // counter eases over the first 1.6s of scene 1
+  document.getElementById("c-cases").textContent =
+    Math.round(TOTAL_CASES * easeOut((t - a0) / 1600)).toLocaleString();
+
+  // --- scene 2 -------------------------------------------------------
+  const [b0, b1] = TL.s2;
+  let s2a = 0;
+  if (t >= b0) s2a = easeOut((t - b0) / 350);
+  if (t > b1 - 300) s2a = 1 - easeIO((t - (b1 - 300)) / 300);
+  setScene(scenes.s2, s2a);
+
+  // each message slides in on its own beat
+  msgs.forEach(el => {
+    const at = +el.dataset.at;
+    const p = clamp01((t - at) / 420);
+    const e = easeOut(p);
+    el.style.opacity = e.toFixed(3);
+    el.style.transform = `translateY(${(16 * (1 - e)).toFixed(2)}px)`;
+    const b = el.querySelector(".badge");
+    const bp = clamp01((t - (at + 260)) / 320);
+    b.style.opacity = easeOut(bp).toFixed(3);
+    b.style.transform = `scale(${(0.9 + 0.1 * easeOut(bp)).toFixed(3)})`;
+  });
+
+  // --- scene 3 -------------------------------------------------------
+  const [c0, c1] = TL.s3;
+  let s3a = 0;
+  if (t >= c0) s3a = easeOut((t - c0) / 350);
+  setScene(scenes.s3, s3a);
+
+  nodes.forEach((el, i) => {
+    const at = c0 + 420 + i * 200;
+    const p = easeOut((t - at) / 380);
+    el.style.opacity = (0.35 + 0.65 * p).toFixed(3);
+    if (el.classList.contains("ar")) el.style.color = p > .6 ? "var(--accent)" : "var(--faint)";
+    el.style.borderColor = p > .6 ? "#2f4a3f" : "var(--line)";
+  });
+}
+
+// expose for the frame-by-frame recorder
+window.renderAt = renderAt;
+window.TL = TL;
+renderAt(0);
+</script>
+</body>
+</html>

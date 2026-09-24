@@ -1,0 +1,25 @@
+{
+  "profile_id": "00000000-0000-0000-0000-000000000000",
+  "engine": "chatterbox_turbo",
+  "language": "en",
+  "scenes": [
+    {"id": "s1", "title": "Hook",
+     "line": "This is Knox Defense Force. Thirty-one cases, nineteen commands, zero blind takedowns. Every action has a reason, a record, and a receipt."},
+    {"id": "s2", "title": "What it does",
+     "line": "TypeSafe watches chat, voice, and reports. It screens messages against your server's own rulebook, gates reports with an A.I. validity check, and puts the real calls in your moderators' hands."},
+    {"id": "s3", "title": "How it works",
+     "line": "Five steps. Detect the event. Judge it against your written rules, with a heuristic floor as backup. Open a vote when it's serious. Act. Then log everything, with receipts."},
+    {"id": "s4", "title": "Use cases: chat",
+     "line": "Nitro scam in general chat? Flagged and logged. Someone posting doxxing? Even when the judge is offline, the heuristic floor still routes it to a human with a jump link. Nothing severe disappears."},
+    {"id": "s5", "title": "Use cases: voice and nukes",
+     "line": "Voice moderation works the same way: spam caller disconnected, case filed in the mod log. And if a rogue admin starts deleting channels, anti-nuke reverses the damage and alerts the owner instantly."},
+    {"id": "s6", "title": "Votes",
+     "line": "Serious cases go to a community vote. This report scored a point nine four validity. Mods voted three to one, and the one hour mute upholds. Any moderator can veto with one command."},
+    {"id": "s7", "title": "Alerts, your way",
+     "line": "Alerts stay out of your D M s by default. Routine cases post to a log channel, exactly like the one you just saw in our live server. Owners only get D M s for critical events, and slash notify flips it in one command."},
+    {"id": "s8", "title": "Setup",
+     "line": "Setup is four steps: clone, install, token, run. Dry-run mode watches before it ever enforces, and no dashboard is needed. slash recent, slash me, and slash panel all work inside Discord."},
+    {"id": "s9", "title": "Close",
+     "line": "Reads your rules. Shows the receipts. TypeSafe."}
+  ]
+}

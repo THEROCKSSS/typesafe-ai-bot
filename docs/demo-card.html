@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TypeSafe AI Bot — Moderation Team Demo</title>
+<style>
+  :root{
+    --bg:#0e1015; --panel:#12161d; --inset:#0a0c10; --line:#232833; --line-soft:#1a1f28;
+    --ink:#eae8e3; --dim:#9aa3b2; --faint:#616b7a;
+    --accent:#6ee7b7; --indigo:#818cf8; --amber:#f5b95f; --red:#ef6f6f;
+    --mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+    --sans:"Inter","Segoe UI",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    width:1600px;height:900px;overflow:hidden;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);-webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 40px;border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{
+    width:46px;height:46px;border-radius:12px;background:linear-gradient(145deg,#7ff0c4,#4fd1a0);
+    display:grid;place-items:center;color:#08201a;font-weight:800;font-size:19px;letter-spacing:-.02em;
+  }
+  .brand .nm{font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+  .brand .sub{font-size:12.5px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+  .live{
+    display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:700;
+    letter-spacing:.13em;text-transform:uppercase;color:var(--accent);
+    border:1px solid #1f3d33;background:#0e1a16;padding:9px 16px;border-radius:999px;
+  }
+  .live .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+  /* ---------- headline ---------- */
+  .head{padding:26px 40px 22px}
+  h1{font-size:46px;font-weight:800;letter-spacing:-.028em;line-height:1.08}
+  h1 em{font-style:normal;color:var(--accent)}
+  .head p{margin-top:10px;font-size:18px;color:var(--dim);max-width:1120px;line-height:1.5}
+
+  /* ---------- main ---------- */
+  .main{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:0 40px}
+  .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:20px 22px;display:flex;flex-direction:column;min-height:0;
+  }
+  .ph{
+    font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:14px;
+  }
+  .ph::before{content:"— ";color:var(--accent)}
+
+  /* messages */
+  .msgs{flex:1;display:flex;flex-direction:column;justify-content:space-between;min-height:0}
+  .msg{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+  .msg:last-child{border-bottom:none}
+  .av{
+    flex:0 0 34px;height:34px;border-radius:50%;display:grid;place-items:center;
+    font-weight:800;font-size:13px;color:#0c1512;background:#5b6472;
+  }
+  .av.a1{background:#c98b6b}.av.a2{background:#8b9dc9}.av.a3{background:#7fc9a8}
+  .mb{flex:1;min-width:0}
+  .mh{display:flex;align-items:center;gap:9px;margin-bottom:3px}
+  .mh b{font-size:14.5px;font-weight:650}
+  .mh span{font-size:12px;color:var(--faint)}
+  .txt{font-size:14.5px;color:#dcd9d2;line-height:1.45}
+  .verdict{
+    flex:0 0 auto;align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;padding:5px 10px;border-radius:6px;white-space:nowrap;
+  }
+  .v-hit{color:var(--amber);background:#1a1610;border:1px solid #3d3320}
+  .v-ok{color:var(--accent);background:#0e1a16;border:1px solid #1f3d33}
+  .note{font-size:11.5px;color:var(--faint);font-family:var(--mono);margin-top:3px}
+
+  /* right panel */
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  .kpi{background:var(--inset);border:1px solid var(--line-soft);border-radius:11px;padding:12px 14px}
+  .kpi b{display:block;font-family:var(--mono);font-size:30px;font-weight:600;line-height:1;letter-spacing:-.02em}
+  .kpi span{display:block;font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.09em;font-weight:650;margin-top:5px}
+  .kpi b.g{color:var(--accent)}.kpi b.a{color:var(--amber)}.kpi b.i{color:var(--indigo)}
+
+  .bars{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+  .bar{display:grid;grid-template-columns:88px 1fr 30px;align-items:center;gap:11px;font-size:12.5px}
+  .bar .lbl{color:var(--dim);font-family:var(--mono);font-size:11.5px}
+  .bar .trk{height:9px;background:var(--inset);border-radius:99px;overflow:hidden}
+  .bar .fil{height:100%;border-radius:99px;min-width:10px}
+  .bar .n{text-align:right;color:var(--faint);font-family:var(--mono);font-size:11.5px}
+
+  /* vote card */
+  .vote{
+    background:#14171d;border-left:4px solid var(--amber);border-radius:9px;
+    padding:15px 16px;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;
+  }
+  .vote .vt{font-size:15px;font-weight:700;margin-bottom:9px}
+  .vote .row{font-size:13.5px;color:#c3c8d2;line-height:1.55;margin-bottom:4px}
+  .vote .row b{color:#fff;font-weight:650}
+  .vote .ai{
+    margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);
+    font-size:12.5px;color:var(--accent);font-family:var(--mono);
+  }
+  .vote .win{font-size:11.5px;color:var(--faint);margin-top:6px}
+
+  /* ---------- pipeline ---------- */
+  .pipe{padding:20px 40px 0}
+  .strip{display:flex;align-items:stretch;gap:0;margin-top:12px}
+  .node{
+    flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:13px 15px;
+  }
+  .node .s{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:600;margin-bottom:4px}
+  .node h4{font-size:14.5px;font-weight:650;margin-bottom:3px}
+  .node p{font-size:12px;color:var(--dim);line-height:1.4}
+  .arw{display:grid;place-items:center;padding:0 9px;color:var(--accent);font-size:19px}
+
+  /* ---------- footer ---------- */
+  footer{
+    display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:18px 40px;border-top:1px solid var(--line);margin-top:20px;
+    font-size:13.5px;color:var(--dim);
+  }
+  footer .tag{
+    display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:650;
+    color:var(--accent);border:1px solid #1f3d33;background:#0e1a16;
+    padding:6px 12px;border-radius:999px;
+  }
+  footer .r{font-family:var(--mono);color:var(--faint);font-size:12px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">TS</div>
+    <div>
+      <div class="nm">TypeSafe AI Bot</div>
+      <div class="sub">Knox Defense Force · discord.gg/YOUR-SERVER-INVITE</div>
+    </div>
+  </div>
+  <div class="live"><span class="dot"></span> Live — enforcement on</div>
+</header>
+
+<div class="head">
+  <h1>It reads your rules, <em>explains every call</em>, and shows the receipts.</h1>
+  <p>Every message screened against the server rulebook · member reports gated by an AI review ·
+     consequences decided by community vote — and nothing is ever silent.</p>
+</div>
+
+<div class="main">
+
+  <!-- LEFT: real catches -->
+  <div class="panel">
+    <div class="ph">Caught in the live pipeline</div>
+    <div class="msgs">
+
+    <div class="msg">
+      <div class="av a1">R</div>
+      <div class="mb">
+        <div class="mh"><b>raider_kx</b><span>#general</span></div>
+        <div class="txt">I know where you live and I will dox you and your family</div>
+        <div class="note">case #27 · doxxing reference · logged + mod alerted</div>
+      </div>
+      <div class="verdict v-hit">Flagged</div>
+    </div>
+
+    <div class="msg">
+      <div class="av a2">p</div>
+      <div class="mb">
+        <div class="mh"><b>pug_lord</b><span>#clips</span></div>
+        <div class="txt">kys already</div>
+        <div class="note">case #29 · self-harm encouragement · logged + mod alerted</div>
+      </div>
+      <div class="verdict v-hit">Flagged</div>
+    </div>
+
+    <div class="msg">
+      <div class="av a1">M</div>
+      <div class="mb">
+        <div class="mh"><b>Mimic</b><span>#general</span></div>
+        <div class="txt">I'll kill them if them touches my generator again</div>
+        <div class="note">case #28 · threat-like language · logged + mod alerted</div>
+      </div>
+      <div class="verdict v-hit">Flagged</div>
+    </div>
+
+    <div class="msg">
+      <div class="av a3">o</div>
+      <div class="mb">
+        <div class="mh"><b>owen</b><span>#general</span></div>
+        <div class="txt">gg that was a great raid tonight, thanks for the help everyone</div>
+        <div class="note">no case written — clean messages pass untouched</div>
+      </div>
+      <div class="verdict v-ok">Cleared</div>
+    </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: live state + vote -->
+  <div class="panel">
+    <div class="ph">Live state right now</div>
+    <div class="kpis">
+      <div class="kpi"><b class="a">30</b><span>cases logged</span></div>
+      <div class="kpi"><b class="i">2</b><span>open votes</span></div>
+      <div class="kpi"><b class="g">0</b><span>silent actions</span></div>
+    </div>
+
+    <div class="bars">
+      <div class="bar"><span class="lbl">review</span><span class="trk"><span class="fil" style="width:100%;background:var(--amber)"></span></span><span class="n">24</span></div>
+      <div class="bar"><span class="lbl">timeout</span><span class="trk"><span class="fil" style="width:8.3%;background:var(--indigo)"></span></span><span class="n">2</span></div>
+      <div class="bar"><span class="lbl">voice_mute</span><span class="trk"><span class="fil" style="width:4.2%;background:var(--accent)"></span></span><span class="n">1</span></div>
+      <div class="bar"><span class="lbl">lockdown</span><span class="trk"><span class="fil" style="width:4.2%;background:var(--red)"></span></span><span class="n">1</span></div>
+    </div>
+
+    <div class="vote">
+      <div class="vt">Community vote — reported member</div>
+      <div class="row"><b>Reason:</b> They kept screaming slurs at people in the voice channel and wouldn't stop after warnings.</div>
+      <div class="ai">AI review: reason validity 0.94 → suggests 1h voice mute</div>
+      <div class="win">Passes at ≥5 votes &amp; ≥60% within 10 min · ends in an AI review of the outcome before it applies</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="pipe">
+  <div class="ph">How a decision is made</div>
+  <div class="strip">
+    <div class="node"><div class="s">STEP 1</div><h4>Message arrives</h4><p>Screened against every enabled rule in one batched call.</p></div>
+    <div class="arw">→</div>
+    <div class="node"><div class="s">STEP 2</div><h4>AI review</h4><p>Returns a probability per rule — never a punishment.</p></div>
+    <div class="arw">→</div>
+    <div class="node"><div class="s">STEP 3</div><h4>Confidence bands</h4><p>High acts · medium alerts a mod · low is logged only.</p></div>
+    <div class="arw">→</div>
+    <div class="node"><div class="s">STEP 4</div><h4>Action + case</h4><p>Applied, logged with names, and reported to owners.</p></div>
+  </div>
+</div>
+
+<footer>
+  <span class="tag">The AI suggests. Code decides. You can always see both.</span>
+  <span class="r">3 defense layers · 13 slash commands · every action logged with names</span>
+</footer>
+
+</body>
+</html>

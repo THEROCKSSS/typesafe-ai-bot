@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TypeSafe AI Bot — Moderation Team Briefing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e1015;
+    --bg-raised: #151920;
+    --bg-inset: #0a0c10;
+    --panel: #12161d;
+    --ink: #eae8e3;
+    --ink-dim: #9aa3b2;
+    --ink-faint: #616b7a;
+    --line: #232833;
+    --line-soft: #1a1f28;
+    --accent: #6ee7b7;
+    --indigo: #818cf8;
+    --amber: #f5b95f;
+    --red: #ef6f6f;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--ink); font-family: var(--sans);
+    font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 28px 80px; }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative; min-height: 460px; display: flex; align-items: center;
+    border-bottom: 1px solid var(--line); overflow: hidden; margin-bottom: 44px;
+  }
+  #field { position: absolute; inset: 0 0 0 48%; }
+  #field canvas { display: block; }
+  .hero-inner { position: relative; z-index: 2; padding: 70px 0; }
+  /* soft curtain so headline text always stays legible over the 3D field */
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(90deg, var(--bg) 0%, var(--bg) 46%,
+                rgba(14,16,21,.94) 54%, rgba(14,16,21,0) 76%);
+  }
+  .kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid #1f3d33; background: #0e1a16;
+    padding: 6px 12px; border-radius: 999px; margin-bottom: 18px;
+  }
+  .kicker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; transform:scale(1);} 50% { opacity:.45; transform:scale(.8);} }
+  .hero h1 {
+    font-size: clamp(34px, 5vw, 54px); font-weight: 800; letter-spacing: -.03em;
+    line-height: 1.06; margin-bottom: 16px; max-width: 15ch;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p.lede { font-size: clamp(16px, 1.9vw, 19px); color: var(--ink-dim);
+    max-width: 56ch; margin-bottom: 26px; }
+  .hero-stats { display: flex; gap: 34px; flex-wrap: wrap; margin-top: 30px; }
+  .hs { display: flex; flex-direction: column; gap: 2px; }
+  .hs b { font-family: var(--mono); font-size: 25px; font-weight: 600; color: var(--ink); }
+  .hs span { font-size: 11.5px; color: var(--ink-faint); text-transform: uppercase;
+    letter-spacing: .09em; font-weight: 600; }
+
+  /* ---------- sections ---------- */
+  section { margin-bottom: 60px; }
+  h2 {
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 8px;
+  }
+  h2::before { content: "— "; color: var(--accent); }
+  .sec-title { font-size: clamp(24px, 3vw, 31px); font-weight: 750; letter-spacing: -.02em;
+    margin-bottom: 14px; line-height: 1.2; }
+  .sec-sub { color: var(--ink-dim); max-width: 68ch; margin-bottom: 26px; font-size: 15.5px; }
+
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px; transition: border-color .18s ease, transform .18s ease;
+  }
+  .card:hover { border-color: #2e3947; }
+  .card .ico-lg { font-size: 22px; margin-bottom: 10px; display: block; }
+  .card h3 { font-size: 15.5px; font-weight: 650; margin-bottom: 7px; letter-spacing: -.01em; }
+  .card p { font-size: 13.5px; color: var(--ink-dim); line-height: 1.55; }
+  .card .tag { display: inline-block; font-size: 10.5px; font-weight: 650; letter-spacing: .05em;
+    text-transform: uppercase; padding: 3px 8px; border-radius: 999px; margin-bottom: 10px;
+    border: 1px solid var(--line); color: var(--ink-dim); background: var(--bg-inset); }
+  .tag.green { color: var(--accent); border-color: #1f3d33; background: #0e1a16; }
+  .tag.indigo { color: var(--indigo); border-color: #262a4a; background: #121425; }
+  .tag.amber { color: var(--amber); border-color: #3d3320; background: #1a1610; }
+  .tag.red { color: var(--red); border-color: #3d2424; background: #1a1111; }
+
+  /* ---------- pipeline diagram ---------- */
+  .pipe { display: flex; align-items: stretch; gap: 0; margin: 10px 0 6px; }
+  .pnode {
+    flex: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 14px; position: relative; opacity: 0; transform: translateY(14px);
+    transition: opacity .6s ease, transform .6s cubic-bezier(.22,1,.36,1), border-color .2s;
+  }
+  .pnode.on { opacity: 1; transform: none; border-color: #2f4a3f; }
+  .pnode .pn-step { font-family: var(--mono); font-size: 11px; color: var(--accent);
+    font-weight: 600; margin-bottom: 6px; }
+  .pnode h4 { font-size: 14px; font-weight: 650; margin-bottom: 5px; }
+  .pnode p { font-size: 12.5px; color: var(--ink-dim); line-height: 1.5; }
+  .parrow { display: flex; align-items: center; padding: 0 8px; color: var(--ink-faint);
+    font-size: 18px; opacity: 0; transition: opacity .5s ease; }
+  .parrow.on { opacity: 1; color: var(--accent); }
+
+  /* ---------- flow table ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    overflow: hidden; }
+  th { text-align: left; font-size: 10.5px; font-weight: 700; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--ink-faint); padding: 12px 16px;
+    background: var(--bg-inset); border-bottom: 1px solid var(--line); }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.mono { font-family: var(--mono); font-size: 12.5px; color: var(--accent); }
+  td .who { font-weight: 600; }
+
+  /* ---------- screenshot callouts ---------- */
+  .shot {
+    background: linear-gradient(145deg, #14181f, #10141a);
+    border: 1px solid var(--line); border-radius: 14px; padding: 22px;
+    position: relative; overflow: hidden;
+  }
+  .shot::after {
+    content: ""; position: absolute; top: -40%; right: -10%; width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(110,231,183,.09), transparent 70%);
+    pointer-events: none;
+  }
+  .shot .cmd {
+    font-family: var(--mono); font-size: 14px; color: var(--accent); font-weight: 600;
+    display: block; margin-bottom: 8px;
+  }
+  .shot .desc { font-size: 13.5px; color: var(--ink-dim); }
+  .shot .result { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line-soft);
+    font-size: 12.5px; color: var(--ink-faint); font-family: var(--mono); }
+
+  /* ---------- chat message mock ---------- */
+  .chat {
+    background: #1a1d24; border: 1px solid #262b35; border-radius: 14px; padding: 18px;
+    font-size: 14px; line-height: 1.65; margin-top: 14px;
+  }
+  .chat .msg-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .chat .av { width: 34px; height: 34px; border-radius: 50%; background: var(--accent);
+    color: #0c1512; display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+  .chat .nm { font-weight: 650; font-size: 14px; }
+  .chat .bot-badge { font-size: 9.5px; font-weight: 700; letter-spacing: .05em;
+    background: #5865f2; color: #fff; padding: 2px 5px; border-radius: 4px; text-transform: uppercase; }
+  .chat .ts { font-size: 11.5px; color: var(--ink-faint); }
+  .chat .body { color: #dcd9d2; }
+  .chat .body strong { color: #fff; }
+  .chat .embed {
+    margin-top: 10px; border-left: 3px solid var(--amber); background: #14171d;
+    border-radius: 6px; padding: 14px 16px;
+  }
+  .chat .embed .et { font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .chat .embed .ed { font-size: 13px; color: #b9bec9; }
+
+  /* ---------- steps ---------- */
+  .steps { counter-reset: st; display: flex; flex-direction: column; gap: 14px; }
+  .step {
+    counter-increment: st; display: flex; gap: 16px; align-items: flex-start;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .step::before {
+    content: counter(st); flex: 0 0 30px; height: 30px; border-radius: 50%;
+    background: var(--bg-inset); border: 1px solid var(--accent); color: var(--accent);
+    display: grid; place-items: center; font-family: var(--mono); font-weight: 600; font-size: 13px;
+  }
+  .step h4 { font-size: 14.5px; font-weight: 650; margin-bottom: 4px; }
+  .step p { font-size: 13.5px; color: var(--ink-dim); }
+
+  .reveal { opacity: 0; transform: translateY(18px);
+    transition: opacity .7s ease, transform .7s cubic-bezier(.22,1,.36,1); }
+  .reveal.on { opacity: 1; transform: none; }
+
+  footer { border-top: 1px solid var(--line); padding-top: 24px; color: var(--ink-faint);
+    font-size: 12.5px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .mono { font-family: var(--mono); }
+
+  @media (max-width: 880px) {
+    .g3, .g4 { grid-template-columns: repeat(2, 1fr); }
+    .pipe { flex-direction: column; }
+    .parrow { transform: rotate(90deg); justify-content: center; padding: 4px 0; }
+    /* stacked hero: push the 3D field down and curtain the top instead */
+    #field { inset: 46% 0 0 0; }
+    .hero::before {
+      background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 40%,
+                  rgba(14,16,21,.88) 52%, rgba(14,16,21,.25) 70%, rgba(14,16,21,0) 84%);
+    }
+    .hero { min-height: 640px; }
+  }
+  @media (max-width: 560px) {
+    .g2, .g3, .g4 { grid-template-columns: 1fr; }
+    .wrap { padding: 0 18px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div id="field"></div>
+  <div class="wrap hero-inner">
+    <span class="kicker"><span class="dot"></span> Live on the Knox Defense Force server</span>
+    <h1>Moderation that <em>reads your rules</em> — and explains every call.</h1>
+    <p class="lede">
+      The TypeSafe AI Bot watches chat against the server's written rules, runs member reports
+      through an AI review, and hands real consequences to a community vote — while telling
+      the mod team exactly what happened, why, and who was involved.
+    </p>
+    <div class="hero-stats">
+      <div class="hs"><b>13</b><span>slash commands</span></div>
+      <div class="hs"><b>3</b><span>defense layers</span></div>
+      <div class="hs"><b>1,000</b><span>test cases run</span></div>
+      <div class="hs"><b>100%</b><span>actions logged</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ================= WHAT IT DOES ================= -->
+  <section class="reveal">
+    <h2>What it does</h2>
+    <div class="sec-title">Five jobs, every minute you're offline</div>
+    <p class="sec-sub">Each one writes a case entry, so nothing is ever a mystery later.</p>
+    <div class="grid g3">
+      <div class="card">
+        <span class="ico-lg">🛡️</span><span class="tag green">automod</span>
+        <h3>Chat screening</h3>
+        <p>Every message is read against the server's rules in a single AI pass. Clear breaks
+           get handled instantly; anything borderline goes straight to your DMs for a human call.</p>
+      </div>
+      <div class="card">
+        <span class="ico-lg">🗳️</span><span class="tag indigo">community</span>
+        <h3>Reports &amp; votes</h3>
+        <p>A report needs a written reason. The AI checks the reason is real, then the community
+           votes for 10 minutes — mute, disconnect, or no action.</p>
+      </div>
+      <div class="card">
+        <span class="ico-lg">⏱️</span><span class="tag amber">spam</span>
+        <h3>Spam protection</h3>
+        <p>Bursts, duplicates, mention floods and link spam each get an automatic short timeout,
+           with a channel notice so the room knows why it went quiet.</p>
+      </div>
+      <div class="card">
+        <span class="ico-lg">🚨</span><span class="tag red">nuke</span>
+        <h3>Nuke defense</h3>
+        <p>If an account starts mass-deleting channels, banning, or creating webhooks, their
+           dangerous permissions are stripped immediately and every owner is alerted.</p>
+      </div>
+      <div class="card">
+        <span class="ico-lg">🔑</span><span class="tag">permissions</span>
+        <h3>Role-scoped powers</h3>
+        <p>Exactly which role may warn, mute, disconnect, or configure the bot — chosen from
+           menus, changed without a restart, owners hold everything.</p>
+      </div>
+      <div class="card">
+        <span class="ico-lg">📬</span><span class="tag">alerts</span>
+        <h3>Owner notifications</h3>
+        <p>Timeouts, nuke trips, vote results, and reports needing review are DM'd to every owner
+           — with a channel fallback if someone's DMs are closed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PIPELINE ================= -->
+  <section class="reveal">
+    <h2>How a decision is made</h2>
+    <div class="sec-title">The AI suggests. Code decides. You can always see both.</div>
+    <p class="sec-sub">
+      The bot never lets a model act on its own. Every threshold, every action, and every
+      failure mode is owned by plain code — the AI only supplies a probability.
+    </p>
+    <div class="pipe" id="pipe">
+      <div class="pnode" data-step="1">
+        <div class="pn-step">STEP 1</div>
+        <h4>Message arrives</h4>
+        <p>Read against every enabled rule in one batched call.</p>
+      </div>
+      <div class="parrow">→</div>
+      <div class="pnode" data-step="2">
+        <div class="pn-step">STEP 2</div>
+        <h4>AI review</h4>
+        <p>Returns a probability per rule — never a punishment.</p>
+      </div>
+      <div class="parrow">→</div>
+      <div class="pnode" data-step="3">
+        <div class="pn-step">STEP 3</div>
+        <h4>Confidence bands</h4>
+        <p>High acts · medium alerts you · low is logged only.</p>
+      </div>
+      <div class="parrow">→</div>
+      <div class="pnode" data-step="4">
+        <div class="pn-step">STEP 4</div>
+        <h4>Action + case</h4>
+        <p>Applied, logged with names, and reported to owners.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= COMMANDS ================= -->
+  <section class="reveal">
+    <h2>The commands</h2>
+    <div class="sec-title">Everyone gets three. Mods get six more. Owners get the rest.</div>
+    <div class="grid g2">
+      <div class="card">
+        <span class="tag green">for members</span>
+        <table style="margin-top:6px">
+          <tr><td class="mono">/report</td><td>Report a member — a written reason is required</td></tr>
+          <tr><td class="mono">/votes</td><td>See votes that are open right now</td></tr>
+          <tr><td class="mono">/help</td><td>Everything you can do, in one embed</td></tr>
+          <tr><td class="mono">right-click</td><td>On a message → <b>Report to mods</b></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <span class="tag amber">for moderators</span>
+        <table style="margin-top:6px">
+          <tr><td class="mono">/case @user</td><td>Full history — names, reasons, voice channel</td></tr>
+          <tr><td class="mono">/panel @user</td><td>Quick action buttons + recent cases</td></tr>
+          <tr><td class="mono">/warn</td><td>Logged warning, no enforcement</td></tr>
+          <tr><td class="mono">/mute</td><td>Voice mute 1h — the bot lifts it automatically</td></tr>
+          <tr><td class="mono">/disconnect</td><td>Pull them out of the voice channel</td></tr>
+          <tr><td class="mono">/veto &lt;id&gt;</td><td>Cancel a vote that's being abused</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <span class="tag indigo">for owners</span>
+      <table style="margin-top:6px">
+        <tr><td class="mono">/setup</td><td>Role → capability menus: pick a role, tick what it may do</td></tr>
+        <tr><td class="mono">/owners</td><td>Add or remove owners (people or whole roles)</td></tr>
+        <tr><td class="mono">/config</td><td>Reports channel, log channel, thresholds</td></tr>
+        <tr><td class="mono">/jev</td><td>Is the AI healthy? how much has it cost? — answered plainly</td></tr>
+        <tr><td class="mono">/status</td><td>Uptime, mode, latency, cases, open votes</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= SCREENSHOT-READY ================= -->
+  <section class="reveal">
+    <h2>What the team will actually see</h2>
+    <div class="sec-title">Screenshot these straight into a staff channel</div>
+    <p class="sec-sub">Real flows, real wording. Nothing here is a mockup of text the bot won't send.</p>
+
+    <div class="grid g2">
+      <div class="shot">
+        <span class="cmd">/report @someone</span>
+        <span class="desc">The reporter gets a form. The reason field is <b>mandatory</b> —
+          the AI checks it describes real behavior before anything opens.</span>
+        <div class="result">→ if valid → a vote card appears<br>→ if vague → closed with an explanation</div>
+      </div>
+      <div class="shot">
+        <span class="cmd">/case @someone</span>
+        <span class="desc">The full history in one embed — including who acted, why,
+          and which voice channel they were in at the time.</span>
+        <div class="result">#12 timeout (automod) — 2d ago<br>&nbsp;&nbsp;harassment (p=0.94)<br>
+          &nbsp;&nbsp;by: KDF Command · voice: Field Team</div>
+      </div>
+      <div class="shot">
+        <span class="cmd">/panel @someone</span>
+        <span class="desc">Buttons, not typing. Warn, voice-mute, or disconnect in one click —
+          each with a reason field and an automatic log entry.</span>
+        <div class="result">[Voice mute 1h] [Disconnect] [View cases]</div>
+      </div>
+      <div class="shot">
+        <span class="cmd">/jev</span>
+        <span class="desc">The health of the AI layer, its 24-hour call count and cost,
+          and — in plain words — anything that's degraded.</span>
+        <div class="result">layer 1: healthy · 62 calls · $0.0003<br>
+          "TypeSafe credits are exhausted — add credits to restore full AI judging"</div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:36px">What a vote looks like in Discord</h2>
+    <div class="chat">
+      <div class="msg-head">
+        <div class="av">KD</div>
+        <span class="nm">KDF Command</span>
+        <span class="bot-badge">bot</span>
+        <span class="ts">today at 9:41 PM</span>
+      </div>
+      <div class="body">Community vote — <strong>griefer42</strong></div>
+      <div class="embed">
+        <div class="et">Community vote — griefer42</div>
+        <div class="ed">
+          <strong>Reporter:</strong> @member1<br>
+          <strong>Accused:</strong> @griefer42<br>
+          <strong>Reason:</strong> They kept screaming slurs at people in the voice channel
+          and wouldn't stop after warnings.<br><br>
+          <strong>AI review:</strong> reason validity <strong>0.94</strong> — suggests: 1h voice mute<br><br>
+          Vote below. Passes at <strong>≥5 votes</strong> and <strong>≥60%</strong> agreement within
+          <strong>10 minutes</strong> — when the timer ends, the AI reviews the outcome before it applies.
+          <br><br>
+          <em style="color:#8b919d">vote #3 · staff may veto with /veto 3</em>
+        </div>
+      </div>
+      <div class="body" style="margin-top:12px">
+        [ <b>Mute 1h</b> ] [ <b>Disconnect</b> ] [ <b>No action</b> ]
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TRUST ================= -->
+  <section class="reveal">
+    <h2>Can we trust it</h2>
+    <div class="sec-title">It fails safe, and it never hides a decision</div>
+    <div class="grid g4">
+      <div class="card">
+        <span class="ico-lg">🧯</span>
+        <h3>Fails safe</h3>
+        <p>If the AI layer is down, the bot flags for human review and
+           <b>never</b> auto-punishes on a guess.</p>
+      </div>
+      <div class="card">
+        <span class="ico-lg">📋</span>
+        <h3>Everything logged</h3>
+        <p>Every action — automated or manual — writes a case with names, IDs,
+           reason, and timestamp.</p>
+      </div>
+      <div class="card">
+        <span class="ico-lg">🧪</span>
+        <h3>Test mode</h3>
+        <p>Flip one setting and the bot records what it <em>would</em> do without
+           applying anything.</p>
+      </div>
+      <div class="card">
+        <span class="ico-lg">👁️</span>
+        <h3>Human override</h3>
+        <p>Staff can veto any open vote at any time; owners can change every
+           threshold without a restart.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TRY IT ================= -->
+  <section class="reveal">
+    <h2>How to try it</h2>
+    <div class="sec-title">Four steps, no risk to anyone</div>
+    <div class="steps">
+      <div class="step">
+        <div>
+          <h4>Run <span class="mono">/status</span></h4>
+          <p>Confirms the bot is online and shows whether it's enforcing or just observing.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>Run <span class="mono">/help</span></h4>
+          <p>You'll only see commands your role can actually use — that's the permission
+             system working.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>File a real report on a throwaway account</h4>
+          <p>Watch the reason get reviewed, then let the vote run its 10 minutes.
+             The AI reviews the outcome before anything applies.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div>
+          <h4>Check <span class="mono">/case</span> afterwards</h4>
+          <p>The whole thing — reporter, accused, reason, tally, and the AI's verdict —
+             is sitting in the case log.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>TypeSafe AI Bot · Knox Defense Force · live control panel at <span class="mono">127.0.0.1:8788</span></span>
+    <span class="mono">judged by TypeSafe Jev · built by Familiar</span>
+  </footer>
+</div>
+
+<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+<script>
+/* ---------- Three.js hero field ---------- */
+(function () {
+  const host = document.getElementById("field");
+  if (!host || typeof THREE === "undefined") return;
+  const W = () => host.clientWidth, H = () => host.clientHeight;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, W() / H(), 0.1, 100);
+  camera.position.set(0, 0, 10);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(W(), H());
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  host.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+  const key = new THREE.PointLight(0x6ee7b7, 42, 40);
+  key.position.set(5, 5, 7);
+  scene.add(key);
+
+  // the bot core
+  const core = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(1.25, 1),
+    new THREE.MeshStandardMaterial({ color: 0x6ee7b7, roughness: .35, metalness: .3,
+      emissive: 0x1c4a3a, emissiveIntensity: .8, flatShading: true })
+  );
+  scene.add(core);
+
+  const halo = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(1.95, 1),
+    new THREE.MeshBasicMaterial({ color: 0x818cf8, wireframe: true,
+      transparent: true, opacity: .18 })
+  );
+  scene.add(halo);
+
+  // orbiting "messages" — three colors = three judge layers
+  const COLORS = [0x6ee7b7, 0x818cf8, 0xf5b95f];
+  const group = new THREE.Group();
+  const N = 46;
+  const spinners = [];
+  for (let i = 0; i < N; i++) {
+    const phi = Math.acos(1 - (2 * (i + .5)) / N);
+    const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+    const r = 3.3 + ((i * 37) % 10) / 20;
+    const m = new THREE.Mesh(
+      new THREE.SphereGeometry(0.062 + ((i * 13) % 6) / 200, 10, 10),
+      new THREE.MeshStandardMaterial({
+        color: COLORS[i % 3], emissive: COLORS[i % 3], emissiveIntensity: .62,
+        roughness: .5 })
+    );
+    m.position.set(
+      r * Math.sin(phi) * Math.cos(theta),
+      r * Math.sin(phi) * Math.sin(theta),
+      r * Math.cos(phi)
+    );
+    m.userData.base = m.position.clone();
+    m.userData.speed = 0.15 + (i % 7) / 26;
+    group.add(m);
+  }
+  scene.add(group);
+
+  let px = 0, py = 0, tx = 0, ty = 0;
+  window.addEventListener("pointermove", (e) => {
+    const r = host.getBoundingClientRect();
+    tx = ((e.clientX - r.left) / r.width - .5) * .9;
+    ty = ((e.clientY - r.top) / r.height - .5) * .9;
+  });
+
+  const clock = new THREE.Clock();
+  (function tick() {
+    const t = clock.getElapsedTime();
+    core.rotation.y = t * .26;
+    core.rotation.x = Math.sin(t * .35) * .16;
+    halo.rotation.y = -t * .19; halo.rotation.z = t * .09;
+    group.rotation.y = t * .075;
+    // gentle breathing on each node
+    group.children.forEach((m, i) => {
+      const s = 1 + Math.sin(t * m.userData.speed * 3 + i) * .18;
+      m.scale.setScalar(s);
+    });
+    px += (tx - px) * .05; py += (ty - py) * .05;
+    camera.position.x = px * 2.4; camera.position.y = -py * 2.4;
+    camera.lookAt(0, 0, 0);
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  })();
+
+  window.addEventListener("resize", () => {
+    camera.aspect = W() / H(); camera.updateProjectionMatrix();
+    renderer.setSize(W(), H());
+  });
+})();
+
+/* ---------- reveal on scroll ---------- */
+(function () {
+  const els = document.querySelectorAll(".reveal");
+  const io = new IntersectionObserver((es) => {
+    es.forEach((e) => { if (e.isIntersecting) e.target.classList.add("on"); });
+  }, { threshold: .12 });
+  els.forEach((el) => io.observe(el));
+
+  // pipeline nodes cascade in
+  const pipe = document.getElementById("pipe");
+  if (pipe) {
+    const kids = [...pipe.children];
+    const io2 = new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        if (!e.isIntersecting) return;
+        kids.forEach((k, i) => setTimeout(() => k.classList.add("on"), i * 220));
+        io2.disconnect();
+      });
+    }, { threshold: .3 });
+    io2.observe(pipe);
+  }
+})();
+</script>
+</body>
+</html>
