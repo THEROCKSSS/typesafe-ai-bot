@@ -9,9 +9,9 @@ placeholders; `DRY_RUN` defaults to **watch-first** here.
 | | |
 |---|---|
 | **Code** | ✅ complete (bot + dashboard + docs) |
-| **Tests** | ✅ 69 passing (`python -m pytest tests/ -q`) |
+| **Tests** | ✅ 89 passing (`python -m pytest tests/ -q`) |
 | **Dashboard** | ✅ verified rendering live (6 views, no JS errors) |
-| **Judge chain** | ⚠️ built + fallback-tested; TypeSafe account currently has **no API credits** (HTTP 402), so live AI judging is blocked until credits are added — the bot degrades safely (heuristics + human review, never auto-punishes) |
+| **Judge chain** | ✅ built + fallback-tested; live AI judging needs your own TypeSafe API key with credits — without one the bot degrades safely (heuristics + human review, never auto-punishes) |
 | **Not done** | Discord app token (yours to create — see below), real rules text, live-server validation |
 
 ## Quick start
@@ -51,19 +51,16 @@ src/tsabot/              bot: cogs, judge chain, policy, actions, scheduler, ant
 src/tsabot/dashboard/    FastAPI + no-build frontend (dark control panel)
 policy/rules.json        the machine-readable rulebook (replace with your rules)
 tools/judge_selftest.py  live Jev API evidence tool
-tests/                   69 unit + mocked-Discord integration tests
+tests/                   89 unit + mocked-Discord integration tests
 docs/SETUP.md            self-hosting guide (start here)
-docs/PLAN.md             v1 plan · docs/SPEC.md  spec (37 user stories)
-.scratch/v1/issues/      local ticket tracker (one markdown file per ticket)
-HANDOFF.md               running record — read to resume
+docs/SPEC.md             spec (37 user stories) · docs/briefing.html visual briefing
 ```
 
 ## Documentation
 
 - **[docs/SETUP.md](docs/SETUP.md)** — the complete self-hosting guide
-- [docs/PLAN.md](docs/PLAN.md) — architecture + feature map
 - [docs/SPEC.md](docs/SPEC.md) — the spec with user stories + testing decisions
-- [HANDOFF.md](HANDOFF.md) — current state, what's verified, what's left
+- [docs/briefing.html](docs/briefing.html) — visual architecture briefing
 
 ## Secrets
 

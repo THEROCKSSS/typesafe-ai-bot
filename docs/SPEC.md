@@ -6,7 +6,7 @@ live verification · mocked Discord integration tests requested).
 
 ## Problem Statement
 
-Owen runs a growing multi-game community Discord (KDF and beyond). Moderation today is
+The community runs a growing multi-game Discord server. Moderation today is
 fully manual: there is a bot (Jeeves) for server operations, but nothing that watches
 chat for rule breaks, nothing that stops spam floods when mods are offline, nothing
 that detects a compromised admin nuking channels, and no structured way for members to
