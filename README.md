@@ -4,8 +4,9 @@
 suggest — and lets plain code decide.** Every action is logged, explained, and
 (when it matters) put to a community vote.
 
-> 🎬 **[Watch the 2-minute demo reel →](docs/img/demo-reel-v3.mp4)**
-> (1080p, narrated) · [storyboard source](docs/demo-reel-v3.html)
+> 🎬 **[▶ Watch the 2-minute demo reel on the product page](https://therocksss.github.io/typesafe-ai-bot/)**
+> — plays right there, with clickable chapters. 1080p, narrated.
+> (Direct file: [demo-reel-v3.mp4](docs/img/demo-reel-v3.mp4) · [storyboard source](docs/demo-reel-v3.html))
 
 ![Dashboard overview](docs/img/briefing-hero.png)
 
@@ -17,7 +18,7 @@ so a fresh clone can never enforce before you choose to.
 
 | | |
 |---|---|
-| 🎬 **[demo-reel-v3.mp4](docs/img/demo-reel-v3.mp4)** | 2-min narrated tour: hook → live automod catch → case log → community vote → notification routing → setup |
+| 🎬 **[▶ Watch the reel](https://therocksss.github.io/typesafe-ai-bot/#demo)** | 2-min narrated tour with clickable chapters, on the live product page · [raw file](docs/img/demo-reel-v3.mp4) |
 | 🖼️ [Cases view](docs/img/demo-cases.png) | every decision with action, kind, reason, mode |
 | 🖼️ [Votes view](docs/img/demo-votes.png) | live vote tallies with thresholds |
 | 🖼️ [How a decision is made](docs/img/briefing-pipeline.png) | the 4-step chain |
