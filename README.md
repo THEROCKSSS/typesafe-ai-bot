@@ -9,10 +9,9 @@ suggest — and lets plain code decide.** Every action is logged, explained, and
 
 ![Dashboard overview](docs/img/briefing-hero.png)
 
-This is a **sanitized public copy** of a bot running a real multi-game community
-server: personal config and ops notes are removed, Discord IDs are placeholders,
-and `DRY_RUN` defaults to **watch-first** so a fresh clone can never enforce
-before you choose to.
+Built for a real multi-game community server and generalized for self-hosting:
+Discord IDs are config, not constants, and `DRY_RUN` defaults to **watch-first**
+so a fresh clone can never enforce before you choose to.
 
 ## Demo
 
@@ -165,5 +164,5 @@ tools/loadtest/           1,000-case detection harness (used for the badge above
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Built for a real community server; sanitized for
-public use.
+MIT — see [LICENSE](LICENSE). Built for a real community server, now open for
+yours.
