@@ -115,7 +115,7 @@ export default function App() {
             controls
             preload="metadata"
             playsInline
-            poster="briefing-hero.png"
+            poster="poster-16x9.png"
             src="demo-reel-v3.mp4"
           />
           <ol className="chapters" aria-label="Video chapters">

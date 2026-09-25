@@ -23,3 +23,5 @@ data/
 site/node_modules/
 site/dist/
 site/public/*.mp4
+
+!docs/img/poster-16x9.png
