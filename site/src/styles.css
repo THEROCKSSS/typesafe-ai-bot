@@ -337,6 +337,8 @@ code.mono { background: var(--paper-2); border: 1px solid var(--hair); border-ra
   .nav__links { display: none; }
   .stat__sep { display: none; }
   .hero__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1.5rem; }
+  .hero__stats .stat:has(.stat__num--mono),
+  .hero__stats .stat:last-child { grid-column: 1 / -1; }
   .stat__num--mono { font-size: 1.02rem; }
   .hero .field { opacity: 0.65; }
   .chapters li { flex-basis: 48%; }
