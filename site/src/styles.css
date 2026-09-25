@@ -336,7 +336,9 @@ code.mono { background: var(--paper-2); border: 1px solid var(--hair); border-ra
 @media (max-width: 720px) {
   .nav__links { display: none; }
   .stat__sep { display: none; }
-  .hero__stats { gap: 1.2rem 2rem; }
+  .hero__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1.5rem; }
+  .stat__num--mono { font-size: 1.02rem; }
+  .hero .field { opacity: 0.65; }
   .chapters li { flex-basis: 48%; }
   .hero { min-height: auto; padding-block: 7.5rem 3.5rem; }
   .hero__cue { display: none; }
